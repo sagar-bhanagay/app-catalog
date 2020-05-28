@@ -1,0 +1,69 @@
+openapi: '3.0.0'
+info:
+  title:  "Application Catalog"
+  description: "Application onboarding APIs"
+  version: "1.0"
+  contact:
+    email: "hpe-aruba-cloud-orders-blr@hpe.com"
+servers:
+  - url: http://cloud.hpe.com/applications
+    description: "Applications management end point"
+components:
+  schemas:
+    Application:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the application
+        app_id:
+          type: string
+          description: Short identifier of the application
+        description:
+          type: string
+          description: Description of the application
+        logo:
+          type: string
+          format: binary
+          description: Logo image of the application
+        notification_callback:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/NotificationMode'
+      required:
+        - app_id
+        - name
+    NotificationMode:
+      properties:
+        webhook:
+          type: string
+          format: uri
+          description: Webhook notification callback
+        email:
+          type: string
+          format: email
+          description: Email notification callback
+        slack:
+          type: string
+          format: uri
+          description: Slack notification callback
+paths:
+  /:
+    post:
+      tags:
+        - "Application addition API"
+      summary: "Add the application to the application catalog"
+      operationId: "ccs.application.add_update"
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+             schema:
+               $ref: '#/components/schemas/Application'
+      responses:
+        201:
+          description: "Success"
+        400:
+          description: "Bad request"
+        422:
+          description: "Validation Error"
